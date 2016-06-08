@@ -5,10 +5,10 @@ import glob
 from distutils.dir_util import copy_tree
 
 
-project_name = "apptentive"
+project_name = "Flurry"
 project_name_C = string.capwords(project_name)
 project_name_U = project_name.upper()
-dest_dir = "C:/work/oxygine/academia/oxygine-lib_template/"
+dest_dir = "C:/work/oxygine/academia/"
 tempalte_dir = "oxygine-{{project}}"
 
 def quote(src_str):
@@ -44,12 +44,11 @@ def rename_all(start):
     for root, directories, filenames in os.walk(start):
         for directory in directories:
             rename(os.path.join(root, directory))
+    for root, directories, filenames in os.walk(start):
         for filename in filenames:
             fname = os.path.join(root, filename)
             replace_in_file(fname)
             rename(fname)
-
-
 
 if __name__ == "__main__":
     #project_name = raw_input('Input project name(ex: facebook): ')
