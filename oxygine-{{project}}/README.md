@@ -1,2 +1,2 @@
-# oxygine-facebook
+# oxygine-{{project}}
 work in progress

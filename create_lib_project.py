@@ -5,10 +5,14 @@ import glob
 from distutils.dir_util import copy_tree
 
 
-project_name = "Flurry"
+
+
+project_name = raw_input("Enter lib name(ex: pushwoosh):").lower()
 project_name_C = string.capwords(project_name)
 project_name_U = project_name.upper()
-dest_dir = "C:/work/oxygine/academia/"
+
+#"C:/work/oxygine/academia/"
+dest_dir = raw_input("Enter lib dir: ")
 tempalte_dir = "oxygine-{{project}}"
 
 def quote(src_str):

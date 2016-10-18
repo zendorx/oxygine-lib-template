@@ -1,20 +1,19 @@
-#include "facebook.h"
+#include "{{project}}.h"
 
 #ifdef __ANDROID__
-#include "android/AndroidFacebook.h"
-
+    #include "android/Android{{Project}}.h"
 #elif __APPLE__
-#include <TargetConditionals.h>
-#include "ios/iosFacebook.h"
+    #include <TargetConditionals.h>
+    #include "ios/ios{{Project}}.h"
 #else
-#include "sim/FacebookSimulator.h"
+    #include "sim/{{Project}}Simulator.h"
 #endif
 
 
 
-#define FB_EXT_ENABLED 1
+#define {{PROJECT}}_EXT_ENABLED 1
 
-namespace facebook
+namespace {{project}}
 {
 
     spEventDispatcher _dispatcher;
@@ -26,217 +25,64 @@ namespace facebook
 
     void init()
     {
-#if !FB_EXT_ENABLED
+#if !{{PROJECT}}_EXT_ENABLED
         return;
 #endif
 
-        log::messageln("facebook::init");
+        log::messageln("{{project}}::init");
+
         OX_ASSERT(_dispatcher == 0);
         _dispatcher = new EventDispatcher;
 
 #ifdef __ANDROID__
-        jniFacebookInit();
+        jni{{Project}}Init();
 #elif TARGET_OS_IPHONE
 
 #else
-        facebookSimulatorInit();
+        {{project}}SimulatorInit();
 #endif
-        log::messageln("facebook::init done");
+        log::messageln("{{project}}::init done");
     }
 
     void free()
     {
-#if !FB_EXT_ENABLED
+#if !{{PROJECT}}_EXT_ENABLED
         return;
 #endif
 
-        log::messageln("facebook::free");
+        log::messageln("{{project}}::free");
 
         OX_ASSERT(_dispatcher);
 
 #ifdef __ANDROID__
-        jniFacebookFree();
+        jni{{Project}}Free();
 #endif
         _dispatcher->removeAllEventListeners();
         _dispatcher = 0;
-        log::messageln("facebook::free done");
+        log::messageln("{{project}}::free done");
     }
 
-    void login()
+    /*void doSomething()
     {
-#if !FB_EXT_ENABLED
-        return;
-#endif
-        log::messageln("facebook::login");
-
 #ifdef __ANDROID__
-        jniFacebookLogin();
-#elif __APPLE__
-        iosFacebookLogin();
-#else
-        facebookSimulatorLogin();
-#endif
-        log::messageln("facebook::login done");
-    }
-
-    bool appInviteDialog(const string& appLinkUrl, const string& previewImageUrl)
-    {
-#if !FB_EXT_ENABLED
-        return false;
-#endif
-        log::messageln("facebook::AppInviteDialog");
-
-#ifdef __ANDROID__
-        return jniFacebookAppInviteDialog(appLinkUrl, previewImageUrl);
+        jniDoSomethingInJava();
 #elif TARGET_OS_IPHONE
+        jniDoSomethingInObjectiveC();
 #else
-        return facebookSimulatorAppInviteDialog(appLinkUrl, previewImageUrl);
+        simulatorFunction();
 #endif
-        return false;
+        
+    }*/
 
-    }
-
-    void newMeRequest()
-    {
-#if !FB_EXT_ENABLED
-        return;
-#endif
-
-        log::messageln("facebook::newMeRequest");
-
-#ifdef __ANDROID__
-        jniFacebookNewMeRequest();
-#elif TARGET_OS_IPHONE
-#else
-        facebookSimulatorNewMeRequest();
-#endif
-        log::messageln("facebook::newMeRequest done");
-    }
-
-    void getFriends()
-    {
-#if !FB_EXT_ENABLED
-        return;
-#endif
-        log::messageln("facebook::getFriends");
-
-#ifdef __ANDROID__
-        jniFacebookGetFriends();
-#elif TARGET_OS_IPHONE
-#else
-        facebookSimulatorGetFriends();
-#endif
-        log::messageln("facebook::getFriends done");
-    }
-
-    bool isLoggedIn()
-    {
-#if !FB_EXT_ENABLED
-        return false;
-#endif
-        log::messageln("facebook::isLoggined");
-
-#ifdef __ANDROID__
-        return jniFacebookIsLoggedIn();
-#elif TARGET_OS_IPHONE
-#else
-        return facebookSimulatorIsLoggedIn();
-#endif
-        return false;
-    }
-
-    string getAccessToken()
-    {
-#if !FB_EXT_ENABLED
-        return "";
-#endif
-        log::messageln("facebook::getAccessToken");
-
-#ifdef __ANDROID__
-        return jniFacebookGetAccessToken();
-#elif TARGET_OS_IPHONE
-        return iosFacebookGetAccessToken();
-#else
-        return facebookSimulatorGetAccessToken();
-#endif
-        return "";
-    }
-
-    string getUserID()
-    {
-
-#if !FB_EXT_ENABLED
-        return "";
-#endif
-        log::messageln("facebook::getUserID");
-
-#ifdef __ANDROID__
-        return jniFacebookGetUserID();
-#elif TARGET_OS_IPHONE
-        return iosFacebookGetUserID();
-#else
-        return facebookSimulatorGetUserID();
-#endif
-        return "";
-    }
 
     namespace internal
     {
 
-        void newToken(const string& value)
+        /*void callItFromNativeCallback()
         {
-            log::messageln("facebook::internal::newToken %s", value.c_str());
-            TokenEvent ev;
-            ev.token = value;
+            YourEventExample ev;
             _dispatcher->dispatchEvent(&ev);
-        }
-
-        void loginResult(bool value)
-        {
-            log::messageln("facebook::internal::loginResult %d", value);
-            LoginEvent ev;
-            ev.isLoggedIn = value;
-            _dispatcher->dispatchEvent(&ev);
-        }
-
-
-        /*
-            {
-                "id":"1035749669829946",
-                "link" : "https:\/\/www.facebook.com\/app_scoped_user_id\/1035749669829946\/",
-                "name" : "Denis Sachkov"
-            }
-        */
-        void newMeRequestResult(const string& data, bool error)
-        {
-            log::messageln("facebook::internal::newMeRequestResult %s", data.c_str());
-
-            NewMeRequestEvent event;
-            Json::Reader reader;
-            Json::Value root;
-            bool parsingSuccessful = reader.parse(data.c_str(), root);     //parse process
-            if (!parsingSuccessful || error)
-            {
-                event.error = true;
-                log::messageln("newMeRequestResult error %s", error ? "response error" : "parse error");
-                return;
-            }
-            else
-            {
-                event.id = root["id"].asCString();
-                event.link = root["link"].asCString();
-                event.name = root["name"].asCString();
-            }
-
-            _dispatcher->dispatchEvent(&event);
-        }
-
-        void newMyFriendsRequestResult(const string& data, bool error)
-        {
-            log::messageln("facebook::internal::newMyFriendsRequestResult %s", data.c_str());
-
-
-        }
+        }*/
     }
 }
 
