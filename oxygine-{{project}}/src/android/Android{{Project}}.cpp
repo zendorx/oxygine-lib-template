@@ -28,10 +28,10 @@ extern "C"
     {
         string data = jniGetString(env, json_data);
 
-        core::getMainThreadMessages().postCallback([ = ]()
+        core::getMainThreadDispatcher().postCallback([ = ]()
         {
             //call internal function there from src/{{project}}/{{project}}.h
-            callItFromNativeCallback();
+            {{project}}::internal::callItFromNativeCallback();
         });
     }*/
 
@@ -53,7 +53,7 @@ void jni{{Project}}Init()
         _j{{Project}}Class = (jclass) env->NewGlobalRef(_j{{Project}}Class);
         JNI_NOT_NULL(_j{{Project}}Class);
 
-        _jFacebookObject = env->NewGlobalRef(jniFindExtension(env, _j{{Project}}Class));
+        _j{{Project}}Object = env->NewGlobalRef(jniFindExtension(env, _j{{Project}}Class));
         JNI_NOT_NULL(_j{{Project}}Object);
     }
     catch (const notFound&)

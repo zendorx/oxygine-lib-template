@@ -7,24 +7,27 @@ from distutils.dir_util import copy_tree
 
 
 
-project_name = raw_input("Enter lib name(ex: pushwoosh):").lower()
-project_name_C = string.capwords(project_name)
+
+project_name_C = raw_input("Enter lib name(ex: AdMob): ")
+project_name = project_name_C.lower()
 project_name_U = project_name.upper()
+
+print "Debug " + project_name_C + " " + project_name + " " + project_name_U
 
 #"C:/work/oxygine/academia/"
 dest_dir = raw_input("Enter lib dir: ")
 tempalte_dir = "oxygine-{{project}}"
 
-def quote(src_str):
-    return "{{" + src_str + "}}"
+def quote(qstr):
+    return "{{" + qstr + "}}"
 
 def replace_all(src_str):
     global  project_name
     global  project_name_U
     global  project_name_C
 
-    res_str = src_str.replace(quote("project"), project_name)
-    res_str = res_str.replace(quote("Project"), project_name_C)
+    res_str = src_str.replace(quote("Project"), project_name_C)
+    res_str = res_str.replace(quote("project"), project_name)
     return res_str.replace(quote("PROJECT"), project_name_U)
 
 def replace_in_file(name):
@@ -57,7 +60,7 @@ def rename_all(start):
 if __name__ == "__main__":
     #project_name = raw_input('Input project name(ex: facebook): ')
     #dest_dir = raw_input('Input project path(ex: C:\\work\\): ')
-    project_name_C = string.capwords(project_name)
+    #project_name_C = string.capwords(project_name)
     project_name_U = project_name.upper()
 
     if not os.path.isdir(dest_dir):
