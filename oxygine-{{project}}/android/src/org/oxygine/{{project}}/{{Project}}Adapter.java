@@ -16,6 +16,8 @@ public class {{Project}}Adapter extends ActivityObserver
 {
     private static String TAG = "{{Project}}Adapter";
 
+    //public static native void your_native_method(int intValue, String stringValue);
+
     public {{Project}}Adapter(Activity a) {
 
     }
